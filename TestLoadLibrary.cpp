@@ -27,6 +27,26 @@ int wmain(int argc, wchar_t* argv[], wchar_t* envp[])
     if (theModule != NULL)
     {
         std::wcout << "LoadLibrary succeeded." << std::endl;
+
+        if (argc > 2)
+        {
+            std::wstring theProc{ argv[2] };
+            std::wcout << L"Will try to load procedure " << theProc << std::endl;
+            char theProcArray[256];
+            WideCharToMultiByte(CP_UTF8, 0, argv[2], theProc.size(), theProcArray, 256, NULL, NULL);
+            FARPROC procAddr = GetProcAddress(theModule, theProcArray);
+            if (procAddr != NULL)
+            {
+                std::wcout << "GetProcAddress succeeded." << std::endl;
+            }
+            else
+            {
+                DWORD lastError = GetLastError();
+                std::wcout << "GetProcAddress failed. Error code was " << lastError << std::endl;
+                std::wcout << "More info about that error code might be available at https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-" << std::endl;
+            }
+        }
+
         FreeLibrary(theModule);
     }
     else {
